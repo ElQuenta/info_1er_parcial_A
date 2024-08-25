@@ -209,6 +209,21 @@ class Terence(Bird):
         )
         self.scale = 0.06
 
+class Red(Bird):
+    def __init__(
+        self,
+        impulse_vector: ImpulseVector,
+        x: float,
+        y: float,
+        space: pymunk.Space,
+    ):
+        super().__init__(
+            "assets/img/red-bird3.png",
+            impulse_vector,
+            x,
+            y,
+            space,
+        )
 
 class Matilda(Bird):
     def __init__(

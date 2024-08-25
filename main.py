@@ -1,9 +1,10 @@
 import math
+import random
 import logging
 import arcade
 import pymunk
 
-from game_object import Bird, Column, Pig, Blues, Terence, Matilda
+from game_object import Bird, Column, Pig, Blues, Terence, Matilda,Red
 from game_logic import get_impulse_vector, Point2D, get_distance
 
 logging.basicConfig(level=logging.DEBUG)
@@ -48,6 +49,7 @@ class App(arcade.Window):
         # agregar un collision handler
         self.handler = self.space.add_default_collision_handler()
         self.handler.post_solve = self.collision_handler
+        self.score = 0
 
     def collision_handler(self, arbiter, space, data):
         impulse_norm = arbiter.total_impulse.length
@@ -57,6 +59,7 @@ class App(arcade.Window):
         if impulse_norm > 1200:
             for obj in self.world:
                 if obj.shape in arbiter.shapes:
+                    self.score += 300
                     obj.remove_from_sprite_lists()
                     self.space.remove(obj.shape, obj.body)
 
@@ -98,8 +101,8 @@ class App(arcade.Window):
             logger.debug(f"Releasing from: {self.end_point}")
             self.draw_line = False
             impulse_vector = get_impulse_vector(self.start_point, self.end_point)
-            # bird = Bird("assets/img/red-bird3.png", impulse_vector, x, y, self.space)
-            bird = Matilda(impulse_vector, x, y, self.space)
+            bird_class = random.choice([Blues, Terence, Matilda,Red])
+            bird = bird_class(impulse_vector, x, y, self.space)
             self.last_bird = bird
             self.sprites.append(bird)
             self.birds.append(bird)
@@ -115,6 +118,13 @@ class App(arcade.Window):
         if self.draw_line:
             arcade.draw_line(self.start_point.x, self.start_point.y, self.end_point.x, self.end_point.y,
                              arcade.color.BLACK, 3)
+        start_x = WIDTH-150
+        start_y = HEIGHT - 30
+        arcade.draw_text(f"Score: {self.score}",
+                         start_x,
+                         start_y,
+                         arcade.color.FRENCH_WINE,
+                         18, bold=True)
 
 
 def main():
