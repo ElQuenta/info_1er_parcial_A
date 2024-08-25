@@ -24,7 +24,7 @@ class Bird(arcade.Sprite):
         elasticity: float = 0.8,
         friction: float = 1,
         collision_layer: int = 0,
-        has_been_clicked: bool = True
+        has_been_clicked: bool = True,
     ):
         super().__init__(image_path, 1)
         # body
@@ -43,7 +43,7 @@ class Bird(arcade.Sprite):
         shape.friction = friction
         shape.collision_type = collision_layer
 
-        self.space= space
+        self.space = space
         space.add(body, shape)
 
         self.body = body
@@ -61,6 +61,7 @@ class Bird(arcade.Sprite):
 
     def on_click(self):
         pass
+
 
 class Pig(arcade.Sprite):
     def __init__(
@@ -124,7 +125,6 @@ class PassiveObject(arcade.Sprite):
         self.center_y = self.shape.body.position.y
         self.radians = self.shape.body.angle
 
-
 class Column(PassiveObject):
     def __init__(self, x, y, space):
         super().__init__("assets/img/column.png", x, y, space)
@@ -152,7 +152,7 @@ class Blues(Bird):
         x: float,
         y: float,
         space: pymunk.Space,
-        has_been_clicked:bool = False
+        has_been_clicked: bool = False,
     ):
         super().__init__(
             "assets/img/blue.png",
@@ -166,13 +166,79 @@ class Blues(Bird):
             has_been_clicked=has_been_clicked,
         )
         self.scale = 0.1
-    
+
     def on_click(self):
         if not self.has_been_clicked:
             angle_variation = 0.4
             impulse_variation = 20
             self.has_been_clicked = True
-            impulse_Jim = ImpulseVector(self.impulse.angle+angle_variation-0.1, self.impulse.impulse-impulse_variation)
-            impulse_Jake = ImpulseVector(self.impulse.angle-angle_variation, self.impulse.impulse-impulse_variation)
-            self.childs.append(Blues(impulse_Jim, self.center_x, self.center_y, self.space, True))
-            self.childs.append(Blues(impulse_Jake, self.center_x, self.center_y, self.space, True))
+            impulse_Jim = ImpulseVector(
+                self.impulse.angle + angle_variation - 0.1,
+                self.impulse.impulse - impulse_variation,
+            )
+            impulse_Jake = ImpulseVector(
+                self.impulse.angle - angle_variation,
+                self.impulse.impulse - impulse_variation,
+            )
+            self.childs.append(
+                Blues(impulse_Jim, self.center_x, self.center_y, self.space, True)
+            )
+            self.childs.append(
+                Blues(impulse_Jake, self.center_x, self.center_y, self.space, True)
+            )
+
+
+class Terence(Bird):
+    def __init__(
+        self,
+        impulse_vector: ImpulseVector,
+        x: float,
+        y: float,
+        space: pymunk.Space,
+    ):
+        super().__init__(
+            "assets\img\Terence.png",
+            impulse_vector,
+            x,
+            y,
+            space,
+            mass=10,
+            radius=20,
+            max_impulse=120,
+            power_multiplier=60,
+        )
+        self.scale = 0.06
+
+
+class Matilda(Bird):
+    def __init__(
+        self,
+        impulse_vector: ImpulseVector,
+        x: float,
+        y: float,
+        space: pymunk.Space,
+    ):
+        super().__init__(
+            "assets\img\Matilda.png",
+            impulse_vector,
+            x,
+            y,
+            space,
+            mass=6,
+            radius=15,
+            max_impulse=90,
+            power_multiplier=55,
+            has_been_clicked=False,
+        )
+        self.scale = 0.03
+
+    def on_click(self):
+        if not self.has_been_clicked:
+            self.has_been_clicked = True
+            egg = PassiveObject(
+                "assets\img\egg.png",
+                self.body.position.x,
+                self.body.position.y,
+                self.space,
+            )
+            self.childs.append(egg)
