@@ -257,3 +257,29 @@ class Matilda(Bird):
                 self.space,
             )
             self.childs.append(egg)
+class Chuck(Bird):
+    def init(
+        self,
+        impulse_vector: ImpulseVector,
+        x: float,
+        y: float,
+        space: pymunk.Space,
+    ):
+        super().init(
+            "assets/img/chuck_1.png",
+            impulse_vector,
+            x,
+            y,
+            space,
+            max_impulse=200,
+            power_multiplier=60,
+            has_been_clicked=False,
+        )
+        self.scale = 0.2
+
+    def on_click(self):
+        if not self.has_been_clicked:
+            self.has_been_clicked = True
+            impulse = 2 * self.body.velocity.length
+            impulse_vector = pymunk.Vec2d(impulse, 0).rotated(self.body.angle)
+            self.body.apply_impulse_at_local_point(impulse_vector)

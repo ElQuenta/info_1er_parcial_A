@@ -4,7 +4,7 @@ import logging
 import arcade
 import pymunk
 
-from game_object import Bird, Column, Pig, Blues, Terence, Matilda,Red
+from game_object import Bird, Column, Pig, Blues, Terence, Matilda,Red, Chuck
 from game_logic import get_impulse_vector, Point2D, get_distance
 
 logging.basicConfig(level=logging.DEBUG)
@@ -101,8 +101,8 @@ class App(arcade.Window):
             logger.debug(f"Releasing from: {self.end_point}")
             self.draw_line = False
             impulse_vector = get_impulse_vector(self.start_point, self.end_point)
-            bird_class = random.choice([Blues, Terence, Matilda,Red])
-            bird = bird_class(impulse_vector, x, y, self.space)
+            bird_class = random.choice([Blues, Terence, Matilda,Red, Chuck])
+            bird = Chuck(impulse_vector, x, y, self.space)
             self.last_bird = bird
             self.sprites.append(bird)
             self.birds.append(bird)
