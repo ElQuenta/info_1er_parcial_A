@@ -258,14 +258,14 @@ class Matilda(Bird):
             )
             self.childs.append(egg)
 class Chuck(Bird):
-    def init(
+    def __init__(
         self,
         impulse_vector: ImpulseVector,
         x: float,
         y: float,
         space: pymunk.Space,
     ):
-        super().init(
+        super().__init__(
             "assets/img/chuck_1.png",
             impulse_vector,
             x,
@@ -275,7 +275,7 @@ class Chuck(Bird):
             power_multiplier=60,
             has_been_clicked=False,
         )
-        self.scale = 0.2
+        self.scale = 0.03
 
     def on_click(self):
         if not self.has_been_clicked:

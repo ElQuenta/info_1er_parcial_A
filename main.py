@@ -102,7 +102,7 @@ class App(arcade.Window):
             self.draw_line = False
             impulse_vector = get_impulse_vector(self.start_point, self.end_point)
             bird_class = random.choice([Blues, Terence, Matilda,Red, Chuck])
-            bird = Chuck(impulse_vector, x, y, self.space)
+            bird = bird_class(impulse_vector, x, y, self.space)
             self.last_bird = bird
             self.sprites.append(bird)
             self.birds.append(bird)
