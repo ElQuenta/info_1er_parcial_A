@@ -3,7 +3,7 @@ import logging
 import arcade
 import pymunk
 
-from game_object import Bird, Column, Pig
+from game_object import Bird, Column, Pig, Blues
 from game_logic import get_impulse_vector, Point2D, get_distance
 
 logging.basicConfig(level=logging.DEBUG)
@@ -13,8 +13,8 @@ logging.getLogger("PIL").setLevel(logging.WARNING)
 
 logger = logging.getLogger("main")
 
-WIDTH = 1800
-HEIGHT = 800
+WIDTH = 1300
+HEIGHT = 700
 TITLE = "Angry birds"
 GRAVITY = -900
 
@@ -26,6 +26,7 @@ class App(arcade.Window):
         # crear espacio de pymunk
         self.space = pymunk.Space()
         self.space.gravity = (0, GRAVITY)
+        self.last_bird: Bird = None
 
         # agregar piso
         floor_body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -81,25 +82,31 @@ class App(arcade.Window):
         pass
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
+        if button == arcade.MOUSE_BUTTON_LEFT and (self.last_bird is None or self.last_bird.has_been_clicked):
             self.start_point = Point2D(x, y)
             self.end_point = Point2D(x, y)
             self.draw_line = True
             logger.debug(f"Start Point: {self.start_point}")
 
     def on_mouse_drag(self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int):
-        if buttons == arcade.MOUSE_BUTTON_LEFT:
+        if buttons == arcade.MOUSE_BUTTON_LEFT and (self.last_bird is None or self.last_bird.has_been_clicked):
             self.end_point = Point2D(x, y)
             logger.debug(f"Dragging to: {self.end_point}")
 
     def on_mouse_release(self, x: int, y: int, button: int, modifiers: int):
-        if button == arcade.MOUSE_BUTTON_LEFT:
+        if button == arcade.MOUSE_BUTTON_LEFT and (self.last_bird is None or self.last_bird.has_been_clicked):
             logger.debug(f"Releasing from: {self.end_point}")
             self.draw_line = False
             impulse_vector = get_impulse_vector(self.start_point, self.end_point)
-            bird = Bird("assets/img/red-bird3.png", impulse_vector, x, y, self.space)
+            # bird = Bird("assets/img/red-bird3.png", impulse_vector, x, y, self.space)
+            bird = Blues(impulse_vector, x, y, self.space)
+            self.last_bird = bird
             self.sprites.append(bird)
             self.birds.append(bird)
+        elif button == arcade.MOUSE_BUTTON_LEFT and not self.last_bird.has_been_clicked:
+            self.last_bird.on_click()
+            for child in self.last_bird.childs:
+                self.sprites.append(child)
 
     def on_draw(self):
         arcade.start_render()

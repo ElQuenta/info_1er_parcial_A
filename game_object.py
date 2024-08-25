@@ -9,6 +9,7 @@ class Bird(arcade.Sprite):
     Bird class. This represents an angry bird. All the physics is handled by Pymunk,
     the init method only set some initial properties
     """
+
     def __init__(
         self,
         image_path: str,
@@ -23,6 +24,7 @@ class Bird(arcade.Sprite):
         elasticity: float = 0.8,
         friction: float = 1,
         collision_layer: int = 0,
+        has_been_clicked: bool = True
     ):
         super().__init__(image_path, 1)
         # body
@@ -31,6 +33,7 @@ class Bird(arcade.Sprite):
         body.position = (x, y)
 
         impulse = min(max_impulse, impulse_vector.impulse) * power_multiplier
+        self.impulse = impulse_vector
         impulse_pymunk = impulse * pymunk.Vec2d(1, 0)
         # apply impulse
         body.apply_impulse_at_local_point(impulse_pymunk.rotated(impulse_vector.angle))
@@ -40,10 +43,13 @@ class Bird(arcade.Sprite):
         shape.friction = friction
         shape.collision_type = collision_layer
 
+        self.space= space
         space.add(body, shape)
 
         self.body = body
         self.shape = shape
+        self.has_been_clicked = has_been_clicked
+        self.childs = []
 
     def update(self):
         """
@@ -53,6 +59,8 @@ class Bird(arcade.Sprite):
         self.center_y = self.shape.body.position.y
         self.radians = self.shape.body.angle
 
+    def on_click(self):
+        pass
 
 class Pig(arcade.Sprite):
     def __init__(
@@ -87,6 +95,7 @@ class PassiveObject(arcade.Sprite):
     """
     Passive object that can interact with other objects.
     """
+
     def __init__(
         self,
         image_path: str,
@@ -99,7 +108,6 @@ class PassiveObject(arcade.Sprite):
         collision_layer: int = 0,
     ):
         super().__init__(image_path, 1)
-
         moment = pymunk.moment_for_box(mass, (self.width, self.height))
         body = pymunk.Body(mass, moment)
         body.position = (x, y)
@@ -124,15 +132,47 @@ class Column(PassiveObject):
 
 class StaticObject(arcade.Sprite):
     def __init__(
-            self,
-            image_path: str,
-            x: float,
-            y: float,
-            space: pymunk.Space,
-            mass: float = 2,
-            elasticity: float = 0.8,
-            friction: float = 1,
-            collision_layer: int = 0,
+        self,
+        image_path: str,
+        x: float,
+        y: float,
+        space: pymunk.Space,
+        mass: float = 2,
+        elasticity: float = 0.8,
+        friction: float = 1,
+        collision_layer: int = 0,
     ):
         super().__init__(image_path, 1)
 
+
+class Blues(Bird):
+    def __init__(
+        self,
+        impulse_vector: ImpulseVector,
+        x: float,
+        y: float,
+        space: pymunk.Space,
+        has_been_clicked:bool = False
+    ):
+        super().__init__(
+            "assets/img/blue.png",
+            impulse_vector,
+            x,
+            y,
+            space,
+            mass=3,
+            radius=8,
+            max_impulse=80,
+            has_been_clicked=has_been_clicked,
+        )
+        self.scale = 0.1
+    
+    def on_click(self):
+        if not self.has_been_clicked:
+            angle_variation = 0.4
+            impulse_variation = 20
+            self.has_been_clicked = True
+            impulse_Jim = ImpulseVector(self.impulse.angle+angle_variation-0.1, self.impulse.impulse-impulse_variation)
+            impulse_Jake = ImpulseVector(self.impulse.angle-angle_variation, self.impulse.impulse-impulse_variation)
+            self.childs.append(Blues(impulse_Jim, self.center_x, self.center_y, self.space, True))
+            self.childs.append(Blues(impulse_Jake, self.center_x, self.center_y, self.space, True))
